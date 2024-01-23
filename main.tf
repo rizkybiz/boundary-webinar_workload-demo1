@@ -9,8 +9,20 @@ data "terraform_remote_state" "hcp" {
   }
 }
 
+data "terraform_remote_state" "aws_iam" {
+  backend = "remote"
+
+  config = {
+    organization = var.tfc_state_org
+    workspaces = {
+      name = "TFC-admin-doormat-aws-iam-roles"
+    }
+  }
+}
+
 locals {
   priv_key              = base64decode(var.pri_key)
+  aws_iam_role          = data.terraform_remote_state.aws_iam.outputs.doormat_role_arn
   vault_cluster_addr    = data.terraform_remote_state.hcp.outputs.vault_cluster_public_url
   vault_namespace       = data.terraform_remote_state.hcp.outputs.vault_namespace
   vault_admin_token     = data.terraform_remote_state.hcp.outputs.vault_admin_token
@@ -19,10 +31,19 @@ locals {
   vault_ca_pub_key      = tls_private_key.signing-key.public_key_openssh
 }
 
-
+provider "doormat" {}
 
 provider "aws" {
   region = var.aws_region
+  access_key = data.doormat_aws_credentials.creds.access_key
+  secret_key = data.doormat_aws_credentials.creds.secret_key
+  token      = data.doormat_aws_credentials.creds.token
+}
+
+data "doormat_aws_credentials" "creds" {
+  provider = doormat
+
+  role_arn = local.aws_iam_role
 }
 
 data "aws_availability_zones" "available" {
@@ -45,6 +66,10 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
+resource "aws_key_pair" "ssh_key" {
+  key_name = var.pub_key
+  public_key = var.pub_key_material
+}
 
 resource "aws_eip" "nat_gateway" {
   #vpc = true

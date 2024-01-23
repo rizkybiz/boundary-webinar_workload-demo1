@@ -1,11 +1,16 @@
 variable "tfc_state_org" {
   description = "TFC Organization where to access remote_state from"
-  default = "JoeStack"
+  default = "jdefrank-org"
 }
 
 variable "rs_platform_hcp" {
   description = "TFC Workspace where to consume outputs from (cluster_url)"
   default = "boundary-webinar_platform-hcp"
+}
+
+variable "rs_platform_hcp_project" {
+  description = "TFC Project where the workspace is located for remote state retrieval"
+  default = "Boundary Demo"
 }
 
 variable "boundary_global_username" {
@@ -34,7 +39,7 @@ variable "vault_adm_password" {
 
 variable "aws_region" {
   description = "AWS region"
-  default     = "us-east-1"
+  default     = "us-east-2"
 }
 
 variable "name" {
@@ -53,7 +58,12 @@ variable "ssh_user" {
 
 variable "pub_key" {
   description = "the public key to be used to access the bastion host and ansible nodes"
-  default     = "joestack"
+  default     = "jdefrank"
+}
+
+variable "pub_key_material" {
+  description = "Key material for the public key to be used to access the bastion host"
+  type = string
 }
 
 variable "pri_key" {
