@@ -23,7 +23,7 @@ output "ca_public_key" {
 }
 
 output "vault_boundary_token" {
-  value = vault_token.boundary-credentials-store-token.client_token
+  value     = vault_token.boundary-credentials-store-token.client_token
   sensitive = true
 }
 
@@ -39,3 +39,6 @@ output "boundary_cluster" {
   value = local.boundary_cluster_addr
 }
 
+output "boundary_worker_aws_role_arn" {
+  value = aws_iam_role.worker_to_s3.arn
+}

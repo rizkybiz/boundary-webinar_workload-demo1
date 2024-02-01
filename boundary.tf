@@ -47,8 +47,8 @@ resource "boundary_auth_method" "password" {
 
 resource "boundary_account_password" "user" {
   auth_method_id = boundary_auth_method.password.id
-  login_name = var.boundary_project_username
-  password   = var.boundary_project_password
+  login_name     = var.boundary_project_username
+  password       = var.boundary_project_password
 }
 
 resource "boundary_user" "user" {
@@ -97,15 +97,15 @@ resource "boundary_credential_store_vault" "vault_cred_store_dyn" {
 }
 
 resource "boundary_credential_library_vault_ssh_certificate" "vault" {
-  name                = "certificates-library"
-  description         = "Vault CA to grant access to dbnodes"
+  name        = "certificates-library"
+  description = "Vault CA to grant access to dbnodes"
   #credential_store_id = boundary_credential_store_vault.vault_cred_store_dyn.id
   credential_store_id = boundary_credential_store_vault.vault_cred_store_dyn.id
   path                = "ssh-client-signer/sign/boundary-client"
   username            = "ubuntu"
   key_type            = "ecdsa"
   key_bits            = 521
-  extensions          = {
+  extensions = {
     permit-pty = ""
   }
 }
@@ -122,8 +122,8 @@ resource "boundary_credential_username_password" "db" {
   description         = "My first username password credential!"
   credential_store_id = boundary_credential_store_static.db.id
   #credential_store_id = boundary_credential_store_static.example.id
-  username            = var.mysql_user
-  password            = var.mysql_password
+  username = var.mysql_user
+  password = var.mysql_password
 }
 
 // HOST CATALOGS

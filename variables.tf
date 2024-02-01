@@ -1,21 +1,21 @@
 variable "tfc_state_org" {
   description = "TFC Organization where to access remote_state from"
-  default = "jdefrank-org"
+  default     = "jdefrank-org"
 }
 
 variable "rs_platform_hcp" {
   description = "TFC Workspace where to consume outputs from (cluster_url)"
-  default = "boundary-webinar_platform-hcp"
+  default     = "boundary-webinar_platform-hcp"
 }
 
 variable "rs_platform_hcp_project" {
   description = "TFC Project where the workspace is located for remote state retrieval"
-  default = "Boundary Demo"
+  default     = "Boundary Demo"
 }
 
 variable "boundary_global_username" {
   description = "Terraform boundary_provider Username"
-  }
+}
 
 variable "boundary_global_password" {
   description = "Terraform boundary_provider Password"
@@ -34,7 +34,7 @@ variable "vault_adm_user" {
 }
 
 variable "vault_adm_password" {
-  description = "non-root Password to access Vault" 
+  description = "non-root Password to access Vault"
 }
 
 variable "aws_region" {
@@ -63,7 +63,7 @@ variable "pub_key" {
 
 variable "pub_key_material" {
   description = "Key material for the public key to be used to access the bastion host"
-  type = string
+  type        = string
 }
 
 variable "pri_key" {

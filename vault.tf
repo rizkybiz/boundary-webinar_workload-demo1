@@ -13,13 +13,13 @@ resource "vault_generic_endpoint" "adm-user" {
   path                 = "auth/userpass/users/${var.vault_adm_user}"
   ignore_absent_fields = true
 
-    data_json = data.template_file.user.rendered
+  data_json = data.template_file.user.rendered
 }
 
 data "template_file" "user" {
-  template = file("${path.root}/templates/user.tpl") 
+  template = file("${path.root}/templates/user.tpl")
   vars = {
-    policy = vault_policy.admins.name
+    policy   = vault_policy.admins.name
     password = var.vault_adm_password
   }
 }
@@ -130,7 +130,7 @@ EOT
 }
 
 resource "vault_policy" "ssh" {
-  name   = "ssh"
+  name = "ssh"
 
   policy = <<EOT
 path "ssh-client-signer/issue/boundary-client" {
@@ -159,35 +159,35 @@ resource "vault_ssh_secret_backend_role" "boundary-client" {
   allow_user_certificates = true
   allow_host_certificates = true
   #default_user	          = "root"
-  default_user	          = "ubuntu"
-  allowed_users           = "*"
-  allowed_extensions      = "*"
-  default_extensions      = {
+  default_user       = "ubuntu"
+  allowed_users      = "*"
+  allowed_extensions = "*"
+  default_extensions = {
     "permit-pty" = ""
   }
 }
 
 resource "vault_token_auth_backend_role" "boundary_role" {
-  role_name              = "boundary_role"
-  allowed_policies       = [vault_policy.boundary-controller.name, vault_policy.kv-policy.name, vault_policy.ssh.name]
+  role_name        = "boundary_role"
+  allowed_policies = [vault_policy.boundary-controller.name, vault_policy.kv-policy.name, vault_policy.ssh.name]
   #disallowed_policies    = ["default"]
   allowed_entity_aliases = []
   orphan                 = true
   token_period           = "86400"
   renewable              = true
   #token_explicit_max_ttl = ""
-  path_suffix            = "path-suffix"
+  path_suffix = "path-suffix"
 }
 
 resource "vault_token" "boundary-credentials-store-token" {
   role_name         = "boundary_role"
   no_default_policy = true
   #policies          = ["boundary-controller", "ssh", "cred"]
-  policies          = [vault_policy.boundary-controller.name, vault_policy.kv-policy.name, vault_policy.ssh.name]
-  renewable         = true
-  period            = "24h"
-  no_parent         = true
-  ttl               = "24h"
+  policies  = [vault_policy.boundary-controller.name, vault_policy.kv-policy.name, vault_policy.ssh.name]
+  renewable = true
+  period    = "24h"
+  no_parent = true
+  ttl       = "24h"
 
   renew_min_lease = 43200
   renew_increment = 86400

@@ -13,7 +13,7 @@ terraform {
       version = ">=3.13.0"
     }
     doormat = {
-      source = "doormat.hashicorp.services/hashicorp-security/doormat"
+      source  = "doormat.hashicorp.services/hashicorp-security/doormat"
       version = "0.0.10"
     }
   }

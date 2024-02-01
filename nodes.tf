@@ -1,5 +1,5 @@
 data "template_file" "worker" {
-    template = (join("\n", tolist([
+  template = (join("\n", tolist([
     file("${path.root}/templates/base.sh"),
     file("${path.root}/templates/worker.sh")
   ])))
@@ -21,14 +21,14 @@ data "template_cloudinit_config" "worker" {
 
 
 data "template_file" "db_nodes" {
-    template = (join("\n", tolist([
+  template = (join("\n", tolist([
     file("${path.root}/templates/base.sh"),
     file("${path.root}/templates/db-nodes.sh")
   ])))
   vars = {
-    vault_ca_pub_key  = local.vault_ca_pub_key
-    mysql_user        = var.mysql_user
-    mysql_password    = var.mysql_password
+    vault_ca_pub_key = local.vault_ca_pub_key
+    mysql_user       = var.mysql_user
+    mysql_password   = var.mysql_password
   }
 }
 
@@ -46,7 +46,7 @@ data "template_cloudinit_config" "db_nodes" {
 
 resource "aws_instance" "bastionhost" {
   lifecycle {
-    ignore_changes = [ user_data ]
+    ignore_changes = [user_data]
   }
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
@@ -70,7 +70,7 @@ resource "aws_instance" "web_nodes" {
   associate_public_ip_address = "false"
   vpc_security_group_ids      = [aws_security_group.web.id]
   key_name                    = var.pub_key
-  
+
   tags = {
     Name = format("web-%02d", count.index + 1)
   }
@@ -87,7 +87,7 @@ resource "aws_instance" "db_nodes" {
   vpc_security_group_ids      = [aws_security_group.web.id]
   key_name                    = var.pub_key
   user_data                   = data.template_cloudinit_config.db_nodes.rendered
-  
+
   # user_data = <<-EOF
   #             #!/bin/bash
   #             mkdir -p /etc/ssh/
@@ -115,7 +115,7 @@ resource "aws_instance" "db_nodes" {
   #             sudo mysql < /home/ubuntu/demo.sql
   #             systemctl restart mysql
   #             EOF
-  
+
   tags = {
     Name = format("db-%02d", count.index + 1)
   }

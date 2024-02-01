@@ -30,7 +30,7 @@ data "template_file" "ansible_db_hosts" {
   vars = {
     node_name    = aws_instance.db_nodes.*.tags[count.index]["Name"]
     ansible_user = var.ssh_user
-    ip        = "ansible_host=${element(aws_instance.db_nodes.*.private_ip, count.index)}"
+    ip           = "ansible_host=${element(aws_instance.db_nodes.*.private_ip, count.index)}"
   }
 }
 
@@ -44,7 +44,7 @@ data "template_file" "ansible_skeleton" {
 
   vars = {
     web_hosts_def = join("", data.template_file.ansible_web_hosts.*.rendered)
-    db_hosts_def = join("", data.template_file.ansible_db_hosts.*.rendered) 
+    db_hosts_def  = join("", data.template_file.ansible_db_hosts.*.rendered)
   }
 }
 

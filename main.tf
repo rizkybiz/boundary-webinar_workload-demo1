@@ -29,12 +29,13 @@ locals {
   boundary_cluster_addr = data.terraform_remote_state.hcp.outputs.boundary_cluster_url
   worker_token          = boundary_worker.controller_led.controller_generated_activation_token
   vault_ca_pub_key      = tls_private_key.signing-key.public_key_openssh
+  name_prefix           = data.terraform_remote_state.outputs.name_prefix
 }
 
 provider "doormat" {}
 
 provider "aws" {
-  region = var.aws_region
+  region     = var.aws_region
   access_key = data.doormat_aws_credentials.creds.access_key
   secret_key = data.doormat_aws_credentials.creds.secret_key
   token      = data.doormat_aws_credentials.creds.token
@@ -67,7 +68,7 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_key_pair" "ssh_key" {
-  key_name = var.pub_key
+  key_name   = var.pub_key
   public_key = var.pub_key_material
 }
 
@@ -317,3 +318,61 @@ resource "aws_security_group_rule" "nat-egress" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
+resource "aws_s3_bucket" "storage_bucket" {
+  bucket        = "${local.name_prefix}-bucket"
+  force_destroy = true
+
+  tags = {
+    Name        = "${local.name_prefix}-bucket"
+    Environment = "Demo"
+    User        = "${local.name_prefix}"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "public_access" {
+  bucket = aws_s3_bucket.storage_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_iam_role" "worker_to_s3" {
+  name = "${local.name_prefix}-worker-s3-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "worker_to_s3" {
+  name        = "${local.name_prefix}-worker-to-s3-policy"
+  description = "Policy for boundary worker to s3"
+  policy      = data.aws_iam_policy_document.worker_to_s3_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "worker_to_s3" {
+  role       = aws_iam_role.worker_to_s3.name
+  policy_arn = aws_iam_policy.worker_to_s3.arn
+}
+
+data "aws_iam_policy_document" "worker_to_s3_policy_doc" {
+  statement {
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:GetObjectAttributes"
+    ]
+    effect    = "Allow"
+    resources = ["${aws_s3_bucket.storage_bucket.arn}"]
+  }
+}
