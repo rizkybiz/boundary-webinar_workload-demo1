@@ -29,7 +29,7 @@ locals {
   boundary_cluster_addr = data.terraform_remote_state.hcp.outputs.boundary_cluster_url
   worker_token          = boundary_worker.controller_led.controller_generated_activation_token
   vault_ca_pub_key      = tls_private_key.signing-key.public_key_openssh
-  name_prefix           = data.terraform_remote_state.outputs.name_prefix
+  name_prefix           = data.terraform_remote_state.hcp.outputs.name_prefix
 }
 
 provider "doormat" {}
