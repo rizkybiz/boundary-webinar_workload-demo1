@@ -5,14 +5,6 @@ provider "boundary" {
   auth_method_password   = var.boundary_global_password
 }
 
-# provider "boundary" {
-#   alias                  = "project"
-#   addr                   = local.boundary_cluster_addr
-#   auth_method_login_name = var.boundary_project_username
-#   auth_method_password   = var.boundary_project_password
-#   scope_id               = local.demo_org_id
-# }
-
 resource "boundary_scope" "global" {
   global_scope = true
   scope_id     = "global"
@@ -63,7 +55,7 @@ resource "boundary_role" "project_admin" {
   name          = "project_admin"
   description   = "Admin role within Demo Project"
   principal_ids = [boundary_user.user.id]
-  grant_strings = ["id=*;type=*;actions=*"]
+  grant_strings = ["ids=*;type=*;actions=*"]
   scope_id      = boundary_scope.project.id
 }
 
