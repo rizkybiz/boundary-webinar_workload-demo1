@@ -369,9 +369,6 @@ data "aws_iam_policy_document" "worker_to_s3_policy_doc" {
   statement {
     actions = [
       "s3:*"
-      # "s3:PutObject",
-      # "s3:GetObject",
-      # "s3:GetObjectAttributes"
     ]
     effect    = "Allow"
     resources = ["*"]

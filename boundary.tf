@@ -121,7 +121,6 @@ resource "boundary_credential_username_password" "db" {
 // HOST CATALOGS
 
 #WEBNODES
-
 resource "boundary_host_catalog_static" "catalog" {
   name        = "webnodes-catalog"
   description = "My webnodes catalog"
@@ -143,7 +142,6 @@ resource "boundary_host_static" "servers" {
 }
 
 #DBNODES
-
 resource "boundary_host_catalog_static" "catalog_db" {
   name        = "db-catalog"
   description = "My dbnodes catalog"
@@ -164,34 +162,7 @@ resource "boundary_host_static" "servers_db" {
   address         = element(aws_instance.db_nodes.*.private_ip, count.index)
 }
 
-
-
-
-# DB-USER 
-# FIXME: fine grane access to mysql nodes only
-# resource "boundary_account_password" "db-user" {
-#   auth_method_id = boundary_auth_method.password.id
-#   login_name = "db-user"
-#   password   = "db-password1234"
-# }
-
-# resource "boundary_user" "db-user" {
-#   name        = "db-user"
-#   description = "db-user's user resource"
-#   account_ids = [boundary_account_password.db-user.id]
-#   scope_id    = boundary_scope.org.id
-# }
-
-# resource "boundary_role" "db_admin" {
-#   name          = "db_admin"
-#   description   = "db-admin within Demo Project"
-#   principal_ids = [boundary_user.db-user.id]
-#   grant_strings = ["id=*;type=*;actions=*"]
-#   scope_id      = boundary_scope.project.id
-# }
-
 // TARGETS
-
 resource "boundary_target" "ssh_hosts" {
   name                     = "ssh-static-injection-webnodes"
   description              = "ssh webnode targets"
@@ -200,7 +171,7 @@ resource "boundary_target" "ssh_hosts" {
   scope_id                 = boundary_scope.project.id
   ingress_worker_filter    = "\"worker1\" in \"/tags/type\""
   enable_session_recording = false
-  #storage_bucket_id                          = boundary_storage_bucket.session-storage.id
+  storage_bucket_id        = boundary_storage_bucket.session-storage.id
   host_source_ids = [
     boundary_host_set_static.set.id
   ]
@@ -217,7 +188,7 @@ resource "boundary_target" "ssh_hosts_db" {
   scope_id                 = boundary_scope.project.id
   ingress_worker_filter    = "\"worker1\" in \"/tags/type\""
   enable_session_recording = false
-  #storage_bucket_id       = boundary_storage_bucket.session-storage.id
+  storage_bucket_id        = boundary_storage_bucket.session-storage.id
   host_source_ids = [
     boundary_host_set_static.set_db.id
   ]
@@ -234,11 +205,22 @@ resource "boundary_target" "mysql_hosts" {
   scope_id                 = boundary_scope.project.id
   ingress_worker_filter    = "\"worker1\" in \"/tags/type\""
   enable_session_recording = false
-  #storage_bucket_id                          = boundary_storage_bucket.session-storage.id
   host_source_ids = [
     boundary_host_set_static.set_db.id
   ]
   brokered_credential_source_ids = [
     boundary_credential_username_password.db.id
   ]
+}
+
+// STORAGE BUCKET
+resource "boundary_storage_bucket" "session-storage" {
+  bucket_name   = "${var.name_prefix}-demo-bucket"
+  description   = "S3 Bucket for demo session recordings"
+  scope_id      = "global"
+  worker_filter = "\"worker1\" in \"/tags/type\""
+  attributes_json = jsonencode({
+    "region"   = "us-east-2"
+    "role_arn" = "${aws_iam_role.worker_to_s3.arn}"
+  })
 }
