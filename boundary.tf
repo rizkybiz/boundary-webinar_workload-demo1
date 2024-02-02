@@ -218,6 +218,7 @@ resource "boundary_storage_bucket" "session-storage" {
   bucket_name   = "${local.name_prefix}-demo-bucket"
   description   = "S3 Bucket for demo session recordings"
   scope_id      = "global"
+  plugin_name   = "aws"
   worker_filter = "\"worker1\" in \"/tags/type\""
   attributes_json = jsonencode({
     "region"   = "us-east-2"
