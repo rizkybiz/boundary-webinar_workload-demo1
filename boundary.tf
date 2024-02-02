@@ -215,7 +215,8 @@ resource "boundary_target" "mysql_hosts" {
 
 // STORAGE BUCKET
 resource "boundary_storage_bucket" "session-storage" {
-  bucket_name   = "${local.name_prefix}-demo-bucket"
+  name = "${local.name_prefix}-demo-bucket"
+  bucket_name   = aws_s3_bucket.storage_bucket.bucket
   description   = "S3 Bucket for demo session recordings"
   scope_id      = "global"
   plugin_name   = "aws"
