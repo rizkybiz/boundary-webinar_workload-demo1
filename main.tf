@@ -374,7 +374,7 @@ data "aws_iam_policy_document" "worker_to_s3_policy_doc" {
       # "s3:GetObjectAttributes"
     ]
     effect    = "Allow"
-    resources = ["${aws_s3_bucket.storage_bucket.arn}"]
+    resources = ["*"]
   }
 }
 
