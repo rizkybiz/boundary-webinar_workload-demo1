@@ -223,6 +223,6 @@ resource "boundary_storage_bucket" "session-storage" {
   attributes_json = jsonencode({
     "region"   = "us-east-2"
     "role_arn" = "${aws_iam_role.worker_to_s3.arn}"
-    "disable_credential_rotation" = "true"
+    "disable_credential_rotation" = true
   })
 }
