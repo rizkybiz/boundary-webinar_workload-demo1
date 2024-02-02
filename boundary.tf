@@ -170,7 +170,7 @@ resource "boundary_target" "ssh_hosts" {
   default_port             = "22"
   scope_id                 = boundary_scope.project.id
   ingress_worker_filter    = "\"worker1\" in \"/tags/type\""
-  enable_session_recording = false
+  enable_session_recording = true
   storage_bucket_id        = boundary_storage_bucket.session-storage.id
   host_source_ids = [
     boundary_host_set_static.set.id
@@ -187,7 +187,7 @@ resource "boundary_target" "ssh_hosts_db" {
   default_port             = "22"
   scope_id                 = boundary_scope.project.id
   ingress_worker_filter    = "\"worker1\" in \"/tags/type\""
-  enable_session_recording = false
+  enable_session_recording = true
   storage_bucket_id        = boundary_storage_bucket.session-storage.id
   host_source_ids = [
     boundary_host_set_static.set_db.id
