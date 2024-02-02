@@ -368,9 +368,10 @@ resource "aws_iam_role_policy_attachment" "worker_to_s3" {
 data "aws_iam_policy_document" "worker_to_s3_policy_doc" {
   statement {
     actions = [
-      "s3:PutObject",
-      "s3:GetObject",
-      "s3:GetObjectAttributes"
+      "s3:*"
+      # "s3:PutObject",
+      # "s3:GetObject",
+      # "s3:GetObjectAttributes"
     ]
     effect    = "Allow"
     resources = ["${aws_s3_bucket.storage_bucket.arn}"]
