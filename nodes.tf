@@ -50,6 +50,7 @@ resource "aws_instance" "bastionhost" {
   }
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
+  iam_instance_profile        = aws_iam_instance_profile.worker_to_s3.name
   subnet_id                   = aws_subnet.dmz_subnet.id
   private_ip                  = cidrhost(aws_subnet.dmz_subnet.cidr_block, 10)
   associate_public_ip_address = "true"

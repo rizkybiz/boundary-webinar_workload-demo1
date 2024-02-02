@@ -376,3 +376,8 @@ data "aws_iam_policy_document" "worker_to_s3_policy_doc" {
     resources = ["${aws_s3_bucket.storage_bucket.arn}"]
   }
 }
+
+resource "aws_iam_instance_profile" "worker_to_s3" {
+  name = "${local.name_prefix}-worker-to-s3-profile"
+  role = aws_iam_role.worker_to_s3.name
+}
