@@ -215,7 +215,7 @@ resource "boundary_target" "mysql_hosts" {
 
 // STORAGE BUCKET
 resource "boundary_storage_bucket" "session-storage" {
-  bucket_name   = "${var.name_prefix}-demo-bucket"
+  bucket_name   = "${local.name_prefix}-demo-bucket"
   description   = "S3 Bucket for demo session recordings"
   scope_id      = "global"
   worker_filter = "\"worker1\" in \"/tags/type\""
