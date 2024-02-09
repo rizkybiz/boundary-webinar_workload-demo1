@@ -215,6 +215,7 @@ resource "boundary_target" "mysql_hosts" {
 
 // STORAGE BUCKET
 resource "boundary_storage_bucket" "session-storage" {
+  depends_on = [ aws_instance.bastionhost ]
   name = "${local.name_prefix}-demo-bucket"
   bucket_name   = aws_s3_bucket.storage_bucket.bucket
   description   = "S3 Bucket for demo session recordings"
