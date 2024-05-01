@@ -10,7 +10,7 @@ resource "boundary_scope" "global" {
   scope_id     = "global"
 }
 
-resource "boundary_scope" "org" {
+resource "boundary_scope" "webinar_org" {
   name                     = "Webinar Org"
   description              = "Dedicated scope for Webinars"
   scope_id                 = boundary_scope.global.id
@@ -18,10 +18,25 @@ resource "boundary_scope" "org" {
   auto_create_default_role = true
 }
 
+resource "boundary_scope" "homelab_org" {
+  name                     = "Homelab Org"
+  description              = "Dedicated org for homelab"
+  scope_id                 = boundary_scope.global.id
+  auto_create_admin_role   = true
+  auto_create_default_role = true
+}
+
+resource "boundary_scope" "homelab_project" {
+  name                   = "Homelab Project"
+  description            = "Boundary Project for homelab resources"
+  scope_id               = boundary_scope.homelab_org.id
+  auto_create_admin_role = true
+}
+
 resource "boundary_scope" "project" {
   name                   = "Boundary Webinar"
   description            = "Boundary Project within Webinar's Org scope!"
-  scope_id               = boundary_scope.org.id
+  scope_id               = boundary_scope.webinar_org.id
   auto_create_admin_role = true
 }
 
@@ -215,16 +230,16 @@ resource "boundary_target" "mysql_hosts" {
 
 // STORAGE BUCKET
 resource "boundary_storage_bucket" "session-storage" {
-  depends_on = [ aws_instance.bastionhost ]
-  name = "${local.name_prefix}-demo-bucket"
+  depends_on    = [aws_instance.bastionhost]
+  name          = "${local.name_prefix}-demo-bucket"
   bucket_name   = aws_s3_bucket.storage_bucket.bucket
   description   = "S3 Bucket for demo session recordings"
   scope_id      = "global"
   plugin_name   = "aws"
   worker_filter = "\"worker1\" in \"/tags/type\""
   attributes_json = jsonencode({
-    "region"   = "us-east-2"
-    "role_arn" = "${aws_iam_role.worker_to_s3.arn}"
+    "region"                      = "us-east-2"
+    "role_arn"                    = "${aws_iam_role.worker_to_s3.arn}"
     "disable_credential_rotation" = true
   })
 }
